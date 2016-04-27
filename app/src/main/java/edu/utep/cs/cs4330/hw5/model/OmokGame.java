@@ -32,7 +32,12 @@ public class OmokGame implements Parcelable{
     public OmokGame(int network){
         board = new Board();
         players = new Player[2];
-        networkMode();
+        if (network==1){
+            networkMode();
+        }
+        if(network==2){
+            p2pMode();
+        }
     }
 
     protected OmokGame(Parcel in) {
@@ -63,10 +68,17 @@ public class OmokGame implements Parcelable{
     public boolean isPlaceOpen(int x, int y){
         return board.isPlaceOpen(x,y);
     }
+
     private void networkMode(){
         players[0] = new Human(true);
         players[1] = new Network(false);
     }
+
+    private void p2pMode() {
+        players[0] = new Human(true);
+        players[1] = new P2P(false);
+    }
+
     public boolean placeStone(Coordinates coordinates) {
         int current = turn;
         boolean winState;

@@ -30,7 +30,6 @@ import edu.utep.cs.cs4330.hw5.model.Human;
 import edu.utep.cs.cs4330.hw5.model.Network;
 import edu.utep.cs.cs4330.hw5.model.OmokGame;
 import edu.utep.cs.cs4330.hw5.model.Player;
-import edu.utep.cs.cs4330.hw5.model.WebServiceHandler;
 import edu.utep.cs.cs4330.hw5.view.BoardView;
 
 public class GameFragment extends Fragment {
@@ -180,6 +179,7 @@ public class GameFragment extends Fragment {
     public void setBoardView(BoardView boardView) {
         this.boardView = boardView;
     }
+
 
     private boolean isNetworkConnected() {
         try {
