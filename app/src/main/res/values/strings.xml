@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">OmokBT</string>
+    <string name="one_player">One Player</string>
+    <string name="two_players">Two Players</string>
+    <string name="network_play">Network Play</string>
+    <string name="p2p_play">P2P Play</string>
+    <string name="player_one_colon">Player One:</string>
+    <string name="player_two_colon">Player Two:</string>
+    <string name="player_one">Player One</string>
+    <string name="player_two">Player Two</string>
+    <string name="name">Name</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="game_started">Game started</string>
+    <string name="new_game_canceled">New game canceled</string>
+    <string name="new_game">New Game</string>
+    <string name="new_game_prompt">Are you sure you want to start a new game?</string>
+    <string name="win_message">&#160;wins!!!!</string>
+    <string name="loss_message">You lost!!!!</string>
+    <string name="wins_colon">Wins:</string>
+    <string name="losses_colon">Losses:</string>
+    <string name="zero">0</string>
+    <string name="title_activity_one_player">OnePlayerActivity</string>
+    <string name="title_activity_network_play">Network Play</string>
+    <string name="title_activity_p2p_play">P2P Play</string>
+    <string name="action_player_one_color">Player 1 color</string>
+    <string name="action_player_two_color">Player 2 color</string>
+    <string name="action_board_color">Board color</string>
+    <string name="pick_color">Pick a color:</string>
+    <string name="action_line_color">Line color</string>
+    <string name="player_one_turn">Player 1 turn</string>
+    <string name="player_two_turn">Player 2 turn</string>
+
+    <string name="computer_settings">Computer Settings</string>
+    <string name="network_settings">Network Settings</string>
+    <string name="p2p_settings">P2P Settings</string>
+    <string name="random">Random</string>
+    <string name="smart">Smart</string>
+    <string name="network_random">Random</string>
+    <string name="network_smart">Smart</string>
+    <string name="p2p_server">Sever</string>
+    <string name="p2p_client">Client</string>
+    <string name="omokAddress">http://www.cs.utep.edu/cheon/cs4330/project/omok/new?strategy=</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_two_players">TwoPlayersActivity</string>
+    <string name="action_background_music">Music</string>
+</resources>

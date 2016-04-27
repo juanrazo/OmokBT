@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".control.activity.OnePlayerActivity">
+    <item
+        android:id="@+id/action_player_one_color"
+        android:orderInCategory="100"
+        android:title="@string/action_player_one_color" />
+    <item
+        android:id="@+id/action_player_two_color"
+        android:orderInCategory="101"
+        android:title="@string/action_player_two_color" />
+    <item
+        android:id="@+id/action_game_color"
+        android:orderInCategory="103"
+        android:title="@string/action_board_color" />
+    <item
+        android:id="@+id/action_line_color"
+        android:orderInCategory="104"
+        android:title="@string/action_line_color" />
+    <item
+        android:id="@+id/action_background_music"
+        android:orderInCategory="105"
+        android:title="@string/action_background_music" />
+</menu>

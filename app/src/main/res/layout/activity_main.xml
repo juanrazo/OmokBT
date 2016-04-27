@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".control.activity.MainActivity">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/one_player"
+        android:id="@+id/buttonOnePlayer"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/buttonTwoPlayers"
+        android:layout_alignStart="@+id/buttonTwoPlayers"
+        android:layout_alignRight="@+id/buttonTwoPlayers"
+        android:layout_alignEnd="@+id/buttonTwoPlayers"
+        android:onClick="onButtonOnePlayerClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/two_players"
+        android:id="@+id/buttonTwoPlayers"
+        android:layout_below="@+id/buttonOnePlayer"
+        android:layout_centerHorizontal="true"
+        android:onClick="onButtonTwoPlayersClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/network_play"
+        android:id="@+id/buttonNetworkPlay"
+        android:layout_below="@+id/buttonTwoPlayers"
+        android:layout_centerHorizontal="true"
+        android:onClick="onButtonNetworkPlayClick" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/p2p_play"
+        android:id="@+id/buttonP2PPlay"
+        android:layout_below="@+id/buttonNetworkPlay"
+        android:layout_centerHorizontal="true"
+        android:onClick="onButtonP2PPlayClick" />
+
+
+</RelativeLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <fragment
+        class="edu.utep.cs.cs4330.hw5.control.fragment.TwoPlayersFragment"
+        tools:layout="@layout/fragment_two_players"
+        android:id="@+id/fragment_two_players"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0" />
+
+    <fragment
+        class="edu.utep.cs.cs4330.hw5.control.fragment.GameFragment"
+        tools:layout="@layout/fragment_game"
+        android:id="@+id/fragment_game"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+</LinearLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="player_colors">
+        <item>Traditional</item>
+        <item>Blue</item>
+        <item>Green</item>
+    </string-array>
+    <string-array name="board_colors">
+        <item>Traditional</item>
+        <item>Brow</item>
+        <item>Orange</item>
+    </string-array>
+    <string-array name="line_colors">
+        <item>Traditional</item>
+        <item>Purple</item>
+        <item>Pink</item>
+    </string-array>
+
+</resources>
