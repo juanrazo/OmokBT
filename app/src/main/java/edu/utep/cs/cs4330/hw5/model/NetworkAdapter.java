@@ -99,7 +99,7 @@ public class NetworkAdapter {
     /** Read messages from this network adapter and handle them. This method
      * blocks the calling method.
      */
-    public void receiveMessages() {
+    public boolean receiveMessages() {
         String line = null;
         try {
             while ((line = in.readLine()) != null) {
@@ -108,6 +108,7 @@ public class NetworkAdapter {
         } catch (IOException e) {
         }
         notifyMessage(MessageType.CLOSE);
+        return true;
     }
 
     private void parseMessage(String msg) {

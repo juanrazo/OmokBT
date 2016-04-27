@@ -70,13 +70,14 @@ public class P2PActivity extends GameActivity {
                 //((P2P) omokGame.getPlayers()[1]).setWebServer(settingsFragment.getEditServer().getText().toString());
                 if (!((P2P) omokGame.getPlayers()[1]).isServer()){
                     Log.i("startGame()", "randomWebService");
-                    ((P2P) omokGame.getPlayers()[1]).server();
+                    ((P2P) omokGame.getPlayers()[1]).recieveMessage();
                 }
                 else{
                     Log.i("startGame()", "smartWebService");
+                    ((P2P) omokGame.getPlayers()[1]).sendPlay();
                 }
 
-                ((P2P) omokGame.getPlayers()[1]).startStrategy();
+                ((P2P) omokGame.getPlayers()[1]).ackPlay();
                 omokGame.setBoard(new Board());
                 omokGame.setGameRunning(true);
                 omokGame.setTurn(0);

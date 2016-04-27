@@ -27,7 +27,6 @@ public class P2P extends Player {
     private AcceptThread acceptingThread;
     private int state = 0;
 
-
     private boolean isServer = false;
 
     private Coordinates p2pCoordinates = new Coordinates();
@@ -62,6 +61,32 @@ public class P2P extends Player {
         state = SENDING;
     }
 
+    public void sendPlay(){
+        if(state==SENDING){
+            p2pConnected.writePlay();
+            state=RECEIVING;
+            Log.i("Message", "Sent");
+        }
+    }
+
+    public void sendMove(Coordinates coordinates) {
+        if (state == SENDING) {
+            p2pConnected.writeMove(coordinates.getX(), coordinates.getY());
+            state= RECEIVING;
+            Log.i("Message", "Move Sent");
+        }
+    }
+    public void recieveMessage(){
+
+        while(state ==RECEIVING){
+            while(state==RECEIVING && p2pConnected!=null){
+                if(p2pConnected.receiveMessages())
+                    state=SENDING;
+            }
+        }
+        //setMessage(networkAdapter.getPlayType());
+    }
+
     public boolean isServer(){
         return isServer;
     }
@@ -74,9 +99,24 @@ public class P2P extends Player {
 
     }
 
-    public void startStrategy(){
+    public void ackPlay(){
+        if (state==RECEIVING){
+            recieveMessage();
+        }
+
+        if(state==SENDING){
+            p2pConnected.writePlayAck(true,true);
+        }
     }
 
+
+    public void ackMove(int x, int y){
+
+        if(state==SENDING){
+            p2pConnected.writeMoveAck(x , y);
+        }
+        state=SENDING;
+    }
 
     public void currentState(){
 
@@ -200,10 +240,30 @@ public class P2P extends Player {
         public void messageReceived(NetworkAdapter.MessageType type, int x, int y) {
             switch (type){
                 case PLAY:
-
                     break;
                 case PLAY_ACK:
-
+                    if(x == y){
+                        state = RECEIVING;
+                        recieveMessage();
+                    }
+                    if(x!=y){
+                        state = SENDING;
+                    }
+                    break;
+                case MOVE:
+                    p2pCoordinates.setX(x);
+                    p2pCoordinates.setY(y);
+                    state=SENDING;
+                    ackMove(x, y);
+                    break;
+                case MOVE_ACK:
+                    state=RECEIVING;
+                    break;
+                case CLOSE:
+                    break;
+                case QUIT:
+                    break;
+                case UNKNOWN:
                     break;
                 default:
                     break;

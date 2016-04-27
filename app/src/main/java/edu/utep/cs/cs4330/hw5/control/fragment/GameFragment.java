@@ -29,6 +29,7 @@ import edu.utep.cs.cs4330.hw5.model.Coordinates;
 import edu.utep.cs.cs4330.hw5.model.Human;
 import edu.utep.cs.cs4330.hw5.model.Network;
 import edu.utep.cs.cs4330.hw5.model.OmokGame;
+import edu.utep.cs.cs4330.hw5.model.P2P;
 import edu.utep.cs.cs4330.hw5.model.Player;
 import edu.utep.cs.cs4330.hw5.view.BoardView;
 
@@ -102,6 +103,28 @@ public class GameFragment extends Fragment {
                             return true;
                         }
                     }
+                    // Check if playing against P2P
+                    if (omokGame.getPlayers()[1] instanceof P2P) {
+                        if (omokGame.isPlaceOpen(x, y)) {
+                            player = omokGame.getCurrentPlayer();
+                            if (network){
+                                placeNetworkStone();
+                            }
+                            if (player instanceof Human) {
+                                playCoordinates = new Coordinates(x, y);
+                                Log.i("Human Coordinates ", " " + x + ", " + y);
+                                placeP2PStone();
+                                if (omokGame.getPlayers()[1] instanceof Network) {
+                                    ((Network) omokGame.getPlayers()[1]).sendCoordinates(playCoordinates, boardView);
+                                    network = true;
+                                }
+                            }
+                            player = omokGame.getCurrentPlayer();
+
+                            return true;
+                        }
+                    }
+
                     // Logic for playing in human vs human or human vs computer
                     if (omokGame.getPlayers()[1] instanceof Human || omokGame.getPlayers()[1] instanceof Computer) {
                         player = omokGame.getCurrentPlayer();
@@ -138,6 +161,34 @@ public class GameFragment extends Fragment {
     private void placeStone(){
         if (omokGame.placeStone(playCoordinates)) {
             boardView.invalidate();
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            if (player instanceof Human){
+                builder.setMessage(((Human) player).getName() + getResources().getString(R.string.win_message));
+                float curVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                float maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                float leftVolume = curVolume/maxVolume;
+                float rightVolume = curVolume/maxVolume;
+                int priority = 2;
+                float normal_playback_rate = 1f;
+                sound.play(2, leftVolume, rightVolume, priority, 0, normal_playback_rate);
+            }
+            else
+                builder.setMessage(getResources().getString(R.string.loss_message));
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+        if (omokGame.getTurn() == 0)
+            textViewTurn.setText(R.string.player_one_turn);
+        else
+            textViewTurn.setText(R.string.player_two_turn);
+        boardView.updateBoard(omokGame.getBoard().getBoard());
+        boardView.invalidate();
+    }
+
+    private void placeP2PStone(){
+        if (omokGame.placeStone(playCoordinates)) {
+            boardView.invalidate();
+            ((P2P) omokGame.getPlayers()[1]).sendMove(playCoordinates);
             final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             if (player instanceof Human){
                 builder.setMessage(((Human) player).getName() + getResources().getString(R.string.win_message));
