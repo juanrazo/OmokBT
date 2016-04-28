@@ -97,6 +97,14 @@ public class NetworkAdapter {
         }
     }
 
+    public void close(){
+        try {
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /** Read messages from this network adapter and handle them. This method
      * blocks the calling method.
      */

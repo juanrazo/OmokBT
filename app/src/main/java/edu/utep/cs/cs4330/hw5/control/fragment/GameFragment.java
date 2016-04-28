@@ -143,6 +143,8 @@ public class GameFragment extends Fragment {
                         return true;
                     }
                 }
+//                if(!omokGame.isGameRunning() && omokGame.getPlayers()[1] instanceof P2P)
+//                    ((P2P) omokGame.getPlayers()[1]).closeConnection();
                 return false;
             }
         });
@@ -166,8 +168,10 @@ public class GameFragment extends Fragment {
         player = omokGame.getCurrentPlayer();
         if(((P2P) omokGame.getPlayers()[1]).isClientFirst() && ((P2P) omokGame.getPlayers()[1]).isFirstMove()){
             if(player instanceof Human){
+                player.flipStone();
                 omokGame.flipTurn();
                 player = omokGame.getCurrentPlayer();
+                player.flipStone();
             }
             ((P2P) omokGame.getPlayers()[1]).setIsFirstMove(false);
         }
@@ -266,8 +270,6 @@ public class GameFragment extends Fragment {
                     }
                 case P2P.MOVE:
                     Log.i("Omok", "Handler: case MOVE");
-                    //playCoordinates.setX(msg.arg1);
-                    //playCoordinates.setY(msg.arg2);
                     placeP2PStone();
                     break;
                 case P2P.MOVE_ACK:

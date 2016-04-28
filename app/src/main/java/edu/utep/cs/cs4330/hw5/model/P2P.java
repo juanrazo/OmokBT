@@ -138,6 +138,10 @@ public class P2P extends Player {
         isServer = client;
     }
 
+    public void closeConnection(){
+        p2pConnected.close();
+    }
+
     public Coordinates getCoordinates(){
         return p2pCoordinates;
     }
@@ -319,6 +323,7 @@ public class P2P extends Player {
                     state=RECEIVING;
                     break;
                 case CLOSE:
+                    p2pConnected.close();
                     break;
                 case QUIT:
                     break;
