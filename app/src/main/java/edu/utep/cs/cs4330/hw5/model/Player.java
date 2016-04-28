@@ -24,6 +24,10 @@ public abstract class Player implements Parcelable {
         stone = (char)in.readInt();
     }
 
+    public void flipStone(){
+        stone = (stone == 'B') ? 'W' : 'B';
+    }
+
     public boolean isPlayerOne() {
         return playerOne;
     }

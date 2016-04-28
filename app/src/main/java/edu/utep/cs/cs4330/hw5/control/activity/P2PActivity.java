@@ -4,6 +4,8 @@ package edu.utep.cs.cs4330.hw5.control.activity;
  * Created by juanrazo and Genesis Bejarano on 4/26/16.
  */
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,7 +19,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 import edu.utep.cs.cs4330.hw5.R;
 import edu.utep.cs.cs4330.hw5.control.fragment.GameFragment;
@@ -28,10 +38,13 @@ import edu.utep.cs.cs4330.hw5.model.OmokGame;
 import edu.utep.cs.cs4330.hw5.model.P2P;
 
 public class P2PActivity extends GameActivity {
+    private BluetoothAdapter BA = BluetoothAdapter.getDefaultAdapter();
+    ListView pairedDeviceslistView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        omokGame = new OmokGame(1);
+        omokGame = new OmokGame(2);
     }
 
     @Override
@@ -48,30 +61,24 @@ public class P2PActivity extends GameActivity {
     public void startGame() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-        if (!mWifi.isConnected()) {
-            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-        }
-
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int id) {
                 P2PFragment settingsFragment = findP2PFragment();
                 GameFragment gameFragment = findGameFragment();
                 ((Human) omokGame.getPlayers()[0]).setName(settingsFragment.getEditTextPlayerOne().getText().toString());
-                ((P2P) omokGame.getPlayers()[1]).setWebServer(settingsFragment.getEditServer().getText().toString());
-                if (!((P2P) omokGame.getPlayers()[1]).isServer()){
-                    Log.i("startGame()", "randomWebService");
-                    ((P2P) omokGame.getPlayers()[1]).randomWebService();
+                //((P2P) omokGame.getPlayers()[1]).setWebServer(settingsFragment.getEditServer().getText().toString());
+                if (((P2P) omokGame.getPlayers()[1]).isServer()){
+                    Log.i("startGame()", "recieve message");
+                    ((P2P) omokGame.getPlayers()[1]).recieveMessage();
                 }
                 else{
-                    Log.i("startGame()", "smartWebService");
-                    ((P2P) omokGame.getPlayers()[1]).smartWebService();
+                    Log.i("startGame()", "sendPlay");
+                    ((P2P) omokGame.getPlayers()[1]).setIsServer(false);
+                    ((P2P) omokGame.getPlayers()[1]).sendPlay();
                 }
 
-                ((P2P) omokGame.getPlayers()[1]).startStrategy();
+                //((P2P) omokGame.getPlayers()[1]).ackPlay();
                 omokGame.setBoard(new Board());
                 omokGame.setGameRunning(true);
                 omokGame.setTurn(0);
@@ -123,5 +130,46 @@ public class P2PActivity extends GameActivity {
         }
 
     }
+
+    public void viewPairedDevices(View view){
+        final Set<BluetoothDevice> pairedDevices = BA.getBondedDevices();
+
+        pairedDeviceslistView = (ListView) findViewById(R.id.pairedDeviceslistView);
+
+        final ArrayList pairedDevicesArayList = new ArrayList();
+
+        //Add the Device name and address to the arraylist
+        for(BluetoothDevice bluetoothDevice : pairedDevices){
+            pairedDevicesArayList.add(bluetoothDevice.getName() + "\n" + bluetoothDevice.getAddress());
+        }
+
+        final ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, pairedDevicesArayList);
+
+        pairedDeviceslistView.setAdapter(arrayAdapter);
+
+        //Get address and toast from ListView
+        pairedDeviceslistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String info = ((TextView) view).getText().toString();
+                String address = info.substring(info.length() - 17);
+                Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
+
+                BluetoothDevice device = BA.getRemoteDevice(address);
+                // Attempt to connect to the device
+                ((P2P) omokGame.getPlayers()[1]).client(device);
+                //networkAdapter.writePlay();
+                //networkAdapter.setMessageListener(listener);
+            }
+        });
+
+    }
+
+    public ListView getPairedDeviceslistView(){
+        return pairedDeviceslistView;
+    }
+
+
 }
 
