@@ -9,11 +9,15 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.io.IOException;
 import java.util.UUID;
+
+import edu.utep.cs.cs4330.hw5.view.BoardView;
 
 public class P2P extends Player {
 
@@ -25,6 +29,7 @@ public class P2P extends Player {
     private Listener listener;
     private ConnectThread connectingThread;
     private AcceptThread acceptingThread;
+    private BoardView boardView;
     private int state = 0;
 
     private boolean isServer = true;
@@ -69,7 +74,19 @@ public class P2P extends Player {
         if(state==SENDING){
             p2pConnected.writePlay();
             state=RECEIVING;
+            Log.i("Omok", "PLAY Sent");
+            recieveMessage();
             Log.i("Omok", "sendPlay()");
+        }
+    }
+
+    public void sendACKPlay(){
+        if(state==SENDING){
+            p2pConnected.writePlayAck(true, true);
+            state=RECEIVING;
+            Log.i("Omok", "PLAY_ACK Sent");
+            recieveMessage();
+            Log.i("Omok", "sendACKPlay()");
         }
     }
 
@@ -81,14 +98,14 @@ public class P2P extends Player {
         }
     }
     public void recieveMessage(){
-
-        while(state ==RECEIVING){
-            while(state==RECEIVING && p2pConnected!=null){
+//
+//        while(state ==RECEIVING){
+//            while(state==RECEIVING && p2pConnected!=null){
                 Log.i("Omok", "recieveMessage()");
-                if(p2pConnected.receiveMessages())
+                p2pConnected.recieveMsg();
                     state=SENDING;
-            }
-        }
+//            }
+//        }
         //setMessage(networkAdapter.getPlayType());
     }
 
@@ -104,8 +121,9 @@ public class P2P extends Player {
         return p2pCoordinates;
     }
 
-    public void sendCoordinates(Coordinates coordinates, View view){
-
+    public void sendCoordinates(Coordinates coordinates, BoardView boardView){
+        this.boardView = boardView;
+        sendMove(coordinates);
     }
 
     public void ackPlay(){
@@ -122,7 +140,7 @@ public class P2P extends Player {
     public void ackMove(int x, int y){
 
         if(state==SENDING){
-            p2pConnected.writeMoveAck(x , y);
+            p2pConnected.writeMoveAck(x, y);
         }
         state=SENDING;
     }
@@ -131,8 +149,13 @@ public class P2P extends Player {
 
     }
 
+    public void setBoardView(BoardView view){
+        boardView=view;
+    }
+
     private void startNetworkAdapter(BluetoothSocket socket){
         p2pConnected = new NetworkAdapter(socket);
+        p2pConnected.setMessageListener(listener);
     }
 
     private class AcceptThread extends Thread {
@@ -241,7 +264,7 @@ public class P2P extends Player {
         }
     }
 
-    private class Listener implements NetworkAdapter.MessageListener{
+    public class Listener implements NetworkAdapter.MessageListener{
 
         public Listener(){
 
@@ -251,20 +274,39 @@ public class P2P extends Player {
         public void messageReceived(NetworkAdapter.MessageType type, int x, int y) {
             switch (type){
                 case PLAY:
+                    Log.i("Omok", "messageReceived()  PLAY");
+                    sendACKPlay();
                     break;
                 case PLAY_ACK:
                     if(x == y){
-                        state = RECEIVING;
-                        recieveMessage();
+                        state = SENDING;
                     }
                     if(x!=y){
-                        state = SENDING;
+                        state = RECEIVING;
+                        recieveMessage();
                     }
                     break;
                 case MOVE:
                     p2pCoordinates.setX(x);
                     p2pCoordinates.setY(y);
                     state=SENDING;
+                    long downTime = SystemClock.uptimeMillis();
+                    long eventTime = SystemClock.uptimeMillis() + 100;
+                    float xF = 0.0f;
+                    float yF = 0.0f;
+                    xF = (boardView.getWidth()/9) * x;
+                    yF = (boardView.getHeight()/9) * y;
+                    int metaState = 0;
+                    MotionEvent motionEvent = MotionEvent.obtain(
+                            downTime,
+                            eventTime,
+                            MotionEvent.ACTION_UP,
+                            xF,
+                            yF,
+                            metaState
+                    );
+
+                    boardView.dispatchTouchEvent(motionEvent);
                     ackMove(x, y);
                     break;
                 case MOVE_ACK:

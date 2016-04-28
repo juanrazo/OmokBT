@@ -174,6 +174,23 @@ public class NetworkAdapter {
         }).start();
     }
 
+    public void recieveMsg() {
+
+        new Thread(new Runnable() {
+            String line = null;
+            @Override
+            public void run() {
+                try {
+                    while ((line = in.readLine()) != null) {
+                        parseMessage(line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     /** Write a bye message, i.e., terminate the connection. */
     public void writeBye() {
         if (out != null) {
@@ -207,6 +224,7 @@ public class NetworkAdapter {
     }
 
     private void notifyMessage(MessageType type) {
+        Log.i("Omok" , "notifyMessage");
         listener.messageReceived(type, 0, 0);
     }
 

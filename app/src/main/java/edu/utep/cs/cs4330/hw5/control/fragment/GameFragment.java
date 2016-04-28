@@ -37,6 +37,7 @@ public class GameFragment extends Fragment {
     private BoardView boardView;
     private TextView textViewTurn;
     private boolean network = false;
+    private boolean p2p = false;
     private boolean computer = false;
     private Coordinates playCoordinates = new Coordinates();
     private Player player;
@@ -57,11 +58,16 @@ public class GameFragment extends Fragment {
         sound.load(getContext(), R.raw.sound_winning,2);
         manager = (AudioManager)getContext().getSystemService(Context.AUDIO_SERVICE);
         textViewTurn = (TextView) v.findViewById(R.id.textViewTurn);
+        omokGame = ((GameActivity) getActivity()).getOmokGame();
         boardView = (BoardView) v.findViewById(R.id.board_view);
+        if(omokGame.getPlayers()[1] instanceof P2P){
+            Log.i("Omok", "onCreateView instance of P2P");
+            ((P2P) omokGame.getPlayers()[1]).setBoardView(boardView);
+        }
         boardView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                omokGame = ((GameActivity) getActivity()).getOmokGame();
+
                 if (omokGame.isGameRunning()) {
                     int x = processXY(event.getX(), boardView.getWidth());
                     int y = processXY(event.getY(), boardView.getHeight());
@@ -85,9 +91,13 @@ public class GameFragment extends Fragment {
                         startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                     } else {
                         if (omokGame.isPlaceOpen(x, y)) {
+
                             player = omokGame.getCurrentPlayer();
                             if (network){
                                 placeNetworkStone();
+                            }
+                            if (p2p){
+                                placeP2PStone();
                             }
                             if (player instanceof Human) {
                                 playCoordinates = new Coordinates(x, y);
@@ -97,26 +107,9 @@ public class GameFragment extends Fragment {
                                     ((Network) omokGame.getPlayers()[1]).sendCoordinates(playCoordinates, boardView);
                                     network = true;
                                 }
-                            }
-                            player = omokGame.getCurrentPlayer();
-
-                            return true;
-                        }
-                    }
-                    // Check if playing against P2P
-                    if (omokGame.getPlayers()[1] instanceof P2P) {
-                        if (omokGame.isPlaceOpen(x, y)) {
-                            player = omokGame.getCurrentPlayer();
-                            if (network){
-                                placeNetworkStone();
-                            }
-                            if (player instanceof Human) {
-                                playCoordinates = new Coordinates(x, y);
-                                Log.i("Human Coordinates ", " " + x + ", " + y);
-                                placeP2PStone();
-                                if (omokGame.getPlayers()[1] instanceof Network) {
-                                    ((Network) omokGame.getPlayers()[1]).sendCoordinates(playCoordinates, boardView);
-                                    network = true;
+                                if (omokGame.getPlayers()[1] instanceof P2P) {
+                                    ((P2P) omokGame.getPlayers()[1]).sendCoordinates(playCoordinates, boardView);
+                                    p2p = true;
                                 }
                             }
                             player = omokGame.getCurrentPlayer();
@@ -158,37 +151,19 @@ public class GameFragment extends Fragment {
         }
     }
 
+    private void placeP2PStone(){
+        player = omokGame.getCurrentPlayer();
+        if (player instanceof P2P){
+            Log.i("Inside P2P", "to place stone");
+            playCoordinates = ((P2P) omokGame.getCurrentPlayer()).getCoordinates();
+            Log.i("PlayCoor", "" + playCoordinates.getX() + ", " + playCoordinates.getY());
+            placeStone();
+        }
+    }
+
     private void placeStone(){
         if (omokGame.placeStone(playCoordinates)) {
             boardView.invalidate();
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            if (player instanceof Human){
-                builder.setMessage(((Human) player).getName() + getResources().getString(R.string.win_message));
-                float curVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                float maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                float leftVolume = curVolume/maxVolume;
-                float rightVolume = curVolume/maxVolume;
-                int priority = 2;
-                float normal_playback_rate = 1f;
-                sound.play(2, leftVolume, rightVolume, priority, 0, normal_playback_rate);
-            }
-            else
-                builder.setMessage(getResources().getString(R.string.loss_message));
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
-        if (omokGame.getTurn() == 0)
-            textViewTurn.setText(R.string.player_one_turn);
-        else
-            textViewTurn.setText(R.string.player_two_turn);
-        boardView.updateBoard(omokGame.getBoard().getBoard());
-        boardView.invalidate();
-    }
-
-    private void placeP2PStone(){
-        if (omokGame.placeStone(playCoordinates)) {
-            boardView.invalidate();
-            ((P2P) omokGame.getPlayers()[1]).sendMove(playCoordinates);
             final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             if (player instanceof Human){
                 builder.setMessage(((Human) player).getName() + getResources().getString(R.string.win_message));
