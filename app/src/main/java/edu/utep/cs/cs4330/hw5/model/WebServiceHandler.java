@@ -50,8 +50,6 @@ public class WebServiceHandler {
         url = "http://www.cs.utep.edu/cheon/cs4330/project/omok/play?pid="+pid+"&move="+x+","+y;
         Log.i("URL", url);
         sendCoordinates.execute(url);
-        //http://www.cs.utep.edu/cheon/cs4330/project/omok/play?pid=570498d22d0ec&move=0,5
-        //http://www.cs.utep.edu/cheon/cs4330/project/omok/play/?pid=5705256bbe934&move=0,5
     }
 
     public void setStrategy(String strategy){
@@ -69,6 +67,7 @@ public class WebServiceHandler {
     public void setServer(String server){
         this.server = server;
     }
+
     public class OmokServer extends AsyncTask<String, Void, String > {
 
         @Override
@@ -154,7 +153,6 @@ public class WebServiceHandler {
                 e.printStackTrace();
             }
             Log.i("PostEx Called", "END");
-            //{"response":true,"ack_move":{"x":0,"y":4,"isWin":false,"isDraw":false,"row":[]},"move":{"x":1,"y":2,"isWin":false,"isDraw":false,"row":[]}}
         }
     }
 

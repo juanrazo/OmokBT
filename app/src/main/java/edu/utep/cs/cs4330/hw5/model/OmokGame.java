@@ -90,7 +90,8 @@ public class OmokGame implements Parcelable{
         return winState;
     }
 
-    private void flipTurn() {
+    public void flipTurn() {
+        Log.i("Omok" , "flipTurn()");
         turn = (turn == 0) ? 1 : 0;
     }
 

@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -23,14 +24,23 @@ public class P2P extends Player {
 
     public final static int RECEIVING = 0;
     public final static int SENDING = 1;
+
+    public final static int PLAY = 0;
+    public final static int MOVE = 1;
+    public final static int MOVE_ACK = 2;
+    public final static int CLOSE = 3;
+    public final static int QUIT = 4;
     private BluetoothAdapter BA = BluetoothAdapter.getDefaultAdapter();
     private BluetoothSocket socket;
     private final static UUID MY_UUID = UUID.fromString("f5d23654-5558-40bc-ba2c-2277b1269274");
     private Listener listener;
     private ConnectThread connectingThread;
     private AcceptThread acceptingThread;
-    private BoardView boardView;
+    private Handler handler;
     private int state = 0;
+    private boolean isClientFirst = true;
+    private boolean isFirstMove = true;
+
 
     private boolean isServer = true;
 
@@ -109,6 +119,17 @@ public class P2P extends Player {
         //setMessage(networkAdapter.getPlayType());
     }
 
+    public boolean isClientFirst(){
+        return isClientFirst;
+    }
+
+    public boolean isFirstMove(){
+        return isFirstMove;
+    }
+
+    public void setIsFirstMove(boolean move){
+        isFirstMove = move;
+    }
     public boolean isServer(){
         return isServer;
     }
@@ -121,9 +142,12 @@ public class P2P extends Player {
         return p2pCoordinates;
     }
 
-    public void sendCoordinates(Coordinates coordinates, BoardView boardView){
-        this.boardView = boardView;
+    public void sendCoordinates(Coordinates coordinates){
         sendMove(coordinates);
+    }
+
+    public void getHandler(Handler handler){
+        this.handler = handler;
     }
 
     public void ackPlay(){
@@ -147,10 +171,6 @@ public class P2P extends Player {
 
     public void currentState(){
 
-    }
-
-    public void setBoardView(BoardView view){
-        boardView=view;
     }
 
     private void startNetworkAdapter(BluetoothSocket socket){
@@ -280,34 +300,20 @@ public class P2P extends Player {
                 case PLAY_ACK:
                     if(x == y){
                         state = SENDING;
+                        handler.obtainMessage(PLAY, 1, 1);
                     }
                     if(x!=y){
                         state = RECEIVING;
+                        handler.obtainMessage(PLAY, 1,  0);
                         recieveMessage();
                     }
                     break;
                 case MOVE:
                     p2pCoordinates.setX(x);
                     p2pCoordinates.setY(y);
+                    Log.i("Omok", " X: " + x + " Y: " + y);
                     state=SENDING;
-                    long downTime = SystemClock.uptimeMillis();
-                    long eventTime = SystemClock.uptimeMillis() + 100;
-                    float xF = 0.0f;
-                    float yF = 0.0f;
-                    xF = (boardView.getWidth()/9) * x;
-                    yF = (boardView.getHeight()/9) * y;
-                    int metaState = 0;
-                    MotionEvent motionEvent = MotionEvent.obtain(
-                            downTime,
-                            eventTime,
-                            MotionEvent.ACTION_UP,
-                            xF,
-                            yF,
-                            metaState
-                    );
-
-                    boardView.dispatchTouchEvent(motionEvent);
-                    ackMove(x, y);
+                    handler.obtainMessage(MOVE,x,y).sendToTarget();
                     break;
                 case MOVE_ACK:
                     state=RECEIVING;

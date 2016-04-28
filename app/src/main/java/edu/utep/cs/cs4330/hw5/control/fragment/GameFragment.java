@@ -11,9 +11,12 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.utep.cs.cs4330.hw5.R;
 import edu.utep.cs.cs4330.hw5.control.activity.GameActivity;
@@ -44,6 +48,7 @@ public class GameFragment extends Fragment {
     private OmokGame omokGame;
     private SoundPool sound;
     private AudioManager manager;
+
     public GameFragment() {
         // Required empty public constructor
     }
@@ -62,7 +67,10 @@ public class GameFragment extends Fragment {
         boardView = (BoardView) v.findViewById(R.id.board_view);
         if(omokGame.getPlayers()[1] instanceof P2P){
             Log.i("Omok", "onCreateView instance of P2P");
-            ((P2P) omokGame.getPlayers()[1]).setBoardView(boardView);
+            ((P2P) omokGame.getPlayers()[1]).getHandler(gameHandler);
+            if(((P2P) omokGame.getPlayers()[1]).isClientFirst()){
+                omokGame.flipTurn();
+            }
         }
         boardView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -108,7 +116,7 @@ public class GameFragment extends Fragment {
                                     network = true;
                                 }
                                 if (omokGame.getPlayers()[1] instanceof P2P) {
-                                    ((P2P) omokGame.getPlayers()[1]).sendCoordinates(playCoordinates, boardView);
+                                    ((P2P) omokGame.getPlayers()[1]).sendCoordinates(playCoordinates);
                                     p2p = true;
                                 }
                             }
@@ -141,6 +149,7 @@ public class GameFragment extends Fragment {
         return v;
     }
 
+    //Playing against Dr. Cheon's server
     private void placeNetworkStone(){
         player = omokGame.getCurrentPlayer();
         if (player instanceof Network){
@@ -151,8 +160,18 @@ public class GameFragment extends Fragment {
         }
     }
 
+    //Playing against Peer to Peer
     private void placeP2PStone(){
+        Log.i("Omok", "placeP2PStone()");
         player = omokGame.getCurrentPlayer();
+        if(((P2P) omokGame.getPlayers()[1]).isClientFirst() && ((P2P) omokGame.getPlayers()[1]).isFirstMove()){
+            if(player instanceof Human){
+                omokGame.flipTurn();
+                player = omokGame.getCurrentPlayer();
+            }
+            ((P2P) omokGame.getPlayers()[1]).setIsFirstMove(false);
+        }
+        Log.i("Omok", "placeP2PStone Player " + omokGame.getTurn());
         if (player instanceof P2P){
             Log.i("Inside P2P", "to place stone");
             playCoordinates = ((P2P) omokGame.getCurrentPlayer()).getCoordinates();
@@ -161,6 +180,7 @@ public class GameFragment extends Fragment {
         }
     }
 
+    // All players user placeStone to place a stone in the board.
     private void placeStone(){
         if (omokGame.placeStone(playCoordinates)) {
             boardView.invalidate();
@@ -228,5 +248,36 @@ public class GameFragment extends Fragment {
             x++;
         return x;
     }
+
+    private final Handler gameHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case P2P.PLAY:
+                    switch (msg.arg2){
+                        case 1:
+                            omokGame.flipTurn();
+                            break;
+                        case 0:
+                            omokGame.getPlayers()[0].flipStone();
+                            omokGame.getPlayers()[1].flipStone();
+
+                            break;
+                    }
+                case P2P.MOVE:
+                    Log.i("Omok", "Handler: case MOVE");
+                    //playCoordinates.setX(msg.arg1);
+                    //playCoordinates.setY(msg.arg2);
+                    placeP2PStone();
+                    break;
+                case P2P.MOVE_ACK:
+                    break;
+                case P2P.CLOSE:
+                    break;
+                case P2P.QUIT:
+                    break;
+            }
+        }
+    };
 }
 
