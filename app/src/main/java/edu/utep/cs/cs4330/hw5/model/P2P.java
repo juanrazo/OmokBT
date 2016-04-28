@@ -27,7 +27,7 @@ public class P2P extends Player {
     private AcceptThread acceptingThread;
     private int state = 0;
 
-    private boolean isServer = false;
+    private boolean isServer = true;
 
     private Coordinates p2pCoordinates = new Coordinates();
     private NetworkAdapter p2pConnected;
@@ -35,6 +35,7 @@ public class P2P extends Player {
     public P2P(boolean playerOne) {
         super(playerOne);
         listener = new Listener();
+        server();
     }
 
     protected P2P(Parcel in){
@@ -42,6 +43,7 @@ public class P2P extends Player {
     }
 
     public void server(){
+        Log.i("Omok", "server()");
         if (connectingThread != null) {
             connectingThread.cancel();
             connectingThread = null;
@@ -52,6 +54,8 @@ public class P2P extends Player {
     }
 
     public void client(BluetoothDevice device){
+        Log.i("Omok", "client()");
+        isServer = false;
         if (acceptingThread != null) {
             acceptingThread.cancel();
             acceptingThread = null;
@@ -65,7 +69,7 @@ public class P2P extends Player {
         if(state==SENDING){
             p2pConnected.writePlay();
             state=RECEIVING;
-            Log.i("Message", "Sent");
+            Log.i("Omok", "sendPlay()");
         }
     }
 
@@ -80,6 +84,7 @@ public class P2P extends Player {
 
         while(state ==RECEIVING){
             while(state==RECEIVING && p2pConnected!=null){
+                Log.i("Omok", "recieveMessage()");
                 if(p2pConnected.receiveMessages())
                     state=SENDING;
             }
@@ -89,6 +94,10 @@ public class P2P extends Player {
 
     public boolean isServer(){
         return isServer;
+    }
+
+    public void setIsServer(boolean client){
+        isServer = client;
     }
 
     public Coordinates getCoordinates(){
@@ -160,6 +169,7 @@ public class P2P extends Player {
 //                    networkAdapter.setMessageListener(listener);
                     Log.i("RemoteDevice", device.getName());
                     Log.i("Main", "Recieve");
+                    startNetworkAdapter(socket);
                     //networkAdapter.receiveMessages();
 
                     try{
@@ -216,6 +226,7 @@ public class P2P extends Player {
                 } catch (IOException closeException) { }
                 return;
             }
+            startNetworkAdapter(mmSocket);
             // Do work to manage the connection (in a separate thread)
             //manageConnectedSocket(mmSocket);
             //networkAdapter = new NetworkAdapter(mmSocket);

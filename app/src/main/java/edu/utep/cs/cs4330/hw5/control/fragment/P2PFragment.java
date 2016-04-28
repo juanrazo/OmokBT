@@ -90,7 +90,9 @@ public class P2PFragment extends Fragment {
             case R.id.radioButtoServer:
                 if (checked) {
                     displayDevices.setVisibility(View.INVISIBLE);
+                    if (((P2PActivity) getActivity()).getPairedDeviceslistView() != null){
                     ((P2PActivity) getActivity()).getPairedDeviceslistView().setVisibility(View.INVISIBLE);
+                    }
                     ((P2P) ((GameActivity) getActivity()).
                             getOmokGame().getPlayers()[1]).server();
                 }

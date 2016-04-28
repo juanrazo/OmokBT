@@ -1,6 +1,7 @@
 package edu.utep.cs.cs4330.hw5.model;
 
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -100,6 +101,7 @@ public class NetworkAdapter {
      * blocks the calling method.
      */
     public boolean receiveMessages() {
+        Log.i("Omok", "recieveMessages()");
         String line = null;
         try {
             while ((line = in.readLine()) != null) {
