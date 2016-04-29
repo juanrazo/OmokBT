@@ -67,7 +67,6 @@ public class P2PActivity extends GameActivity {
                 P2PFragment settingsFragment = findP2PFragment();
                 GameFragment gameFragment = findGameFragment();
                 ((Human) omokGame.getPlayers()[0]).setName(settingsFragment.getEditTextPlayerOne().getText().toString());
-                //((P2P) omokGame.getPlayers()[1]).setWebServer(settingsFragment.getEditServer().getText().toString());
                 if (((P2P) omokGame.getPlayers()[1]).isServer()){
                     Log.i("startGame()", "recieve message");
                     ((P2P) omokGame.getPlayers()[1]).recieveMessage();
@@ -78,7 +77,6 @@ public class P2PActivity extends GameActivity {
                     ((P2P) omokGame.getPlayers()[1]).sendPlay();
                 }
 
-                //((P2P) omokGame.getPlayers()[1]).ackPlay();
                 omokGame.setBoard(new Board());
                 omokGame.setGameRunning(true);
                 omokGame.setTurn(0);

@@ -2,6 +2,8 @@ package edu.utep.cs.cs4330.hw5.model;
 
 /**
  * Created by juanrazo and Genesis Bejarano on 4/26/16.
+ * This is a P2P player that will be used when the user is playing against
+ * another user via bluetooth.
  */
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -110,15 +112,9 @@ public class P2P extends Player {
         }
     }
     public void recieveMessage(){
-//
-//        while(state ==RECEIVING){
-//            while(state==RECEIVING && p2pConnected!=null){
-                Log.i("Omok", "recieveMessage()");
-                p2pConnected.recieveMsg();
-                    state=SENDING;
-//            }
-//        }
-        //setMessage(networkAdapter.getPlayType());
+        Log.i("Omok", "recieveMessage()");
+        p2pConnected.recieveMsg();
+        state=SENDING;
     }
 
     public boolean isClientFirst(){
@@ -166,7 +162,6 @@ public class P2P extends Player {
         }
     }
 
-
     public void ackMove(int x, int y){
 
         if(state==SENDING){
@@ -175,15 +170,18 @@ public class P2P extends Player {
         state=SENDING;
     }
 
-    public void currentState(){
-
-    }
-
     private void startNetworkAdapter(BluetoothSocket socket){
         p2pConnected = new NetworkAdapter(socket);
         p2pConnected.setMessageListener(listener);
     }
 
+    /**
+     * This thread is to act as a server, it will wait for a connection and get a socket
+     * to start a new NetworkAdapter with a socket.
+     *
+     * The threads for Accept and Connect are from Androids developer site.
+     * http://developer.android.com/guide/topics/connectivity/bluetooth.html
+     */
     private class AcceptThread extends Thread {
         private final BluetoothServerSocket mmServerSocket;
 
@@ -214,13 +212,9 @@ public class P2P extends Player {
                     Log.i("Socket ", "Found");
                     // Do work to manage the connection (in a separate thread)
                     BluetoothDevice device = socket.getRemoteDevice();
-//                    networkAdapter = new NetworkAdapter(socket);
-//                    networkAdapter.setMessageListener(listener);
                     Log.i("RemoteDevice", device.getName());
                     Log.i("Main", "Recieve");
                     startNetworkAdapter(socket);
-                    //networkAdapter.receiveMessages();
-
                     try{
                         mmServerSocket.close();
                     }catch (IOException e){
@@ -240,6 +234,13 @@ public class P2P extends Player {
         }
     }
 
+    /**
+     * This thread is to act as a client, it will try to connect to a bluetooth device
+     * to start a new NetworkAdapter with a socket.
+     *
+     * The threads for Accept and Connect are from Androids developer site.
+     * http://developer.android.com/guide/topics/connectivity/bluetooth.html
+     */
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
@@ -276,10 +277,6 @@ public class P2P extends Player {
                 return;
             }
             startNetworkAdapter(mmSocket);
-            // Do work to manage the connection (in a separate thread)
-            //manageConnectedSocket(mmSocket);
-            //networkAdapter = new NetworkAdapter(mmSocket);
-            //networkAdapter.setMessageListener(listener);
         }
 
         /** Will cancel an in-progress connection, and close the socket */
@@ -290,6 +287,9 @@ public class P2P extends Player {
         }
     }
 
+    /**
+     * Listener to send the message to the Handler
+     */
     public class Listener implements NetworkAdapter.MessageListener{
 
         public Listener(){

@@ -72,6 +72,7 @@ public class GameFragment extends Fragment {
                 omokGame.flipTurn();
             }
         }
+        //Logic for the game.
         boardView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -200,7 +201,9 @@ public class GameFragment extends Fragment {
                 sound.play(2, leftVolume, rightVolume, priority, 0, normal_playback_rate);
             }
             else{
+                //The game is over
                 builder.setMessage(getResources().getString(R.string.loss_message));
+                // If playing against a P2P close the connection
                 if(!omokGame.isGameRunning() && omokGame.getPlayers()[1] instanceof P2P)
                     ((P2P) omokGame.getPlayers()[1]).sendClose();
             }
@@ -256,6 +259,9 @@ public class GameFragment extends Fragment {
         return x;
     }
 
+    /**
+     * A handler was added for a case when a message is recived from the connected thread.
+     */
     private final Handler gameHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

@@ -80,36 +80,58 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="30dp" />
 
-    <RadioGroup
+    <LinearLayout
+        android:id="@+id/settings"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:orientation="horizontal"
-        android:id="@+id/radioGroup">
+        android:layout_below="@+id/textView">
 
-        <RadioButton
+        <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/p2p_server"
-            android:id="@+id/radioButtoServer"
-            android:checked="true" />
+            android:layout_below="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:orientation="horizontal"
+            android:id="@+id/radioGroup"
+            android:layout_gravity="center_vertical">
 
-        <RadioButton
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"></LinearLayout>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/p2p_server"
+                android:id="@+id/radioButtoServer"
+                android:checked="true" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/p2p_client"
+                android:id="@+id/radioButtonClient"
+                android:checked="false" />
+        </RadioGroup>
+
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/p2p_client"
-            android:id="@+id/radioButtonClient"
-            android:checked="false" />
-    </RadioGroup>
+            android:text="Pair Device"
+            android:id="@+id/pairDevice"
+            android:layout_marginLeft="30dp"
+            />
+    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="View Paired Devices"
         android:id="@+id/viewPairedDevices"
-        android:layout_below="@+id/radioGroup"
+        android:layout_below="@+id/settings"
         />
 
     <ListView
