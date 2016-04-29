@@ -10,15 +10,11 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 
 import java.io.IOException;
 import java.util.UUID;
 
-import edu.utep.cs.cs4330.hw5.view.BoardView;
 
 public class P2P extends Player {
 
@@ -31,7 +27,6 @@ public class P2P extends Player {
     public final static int CLOSE = 3;
     public final static int QUIT = 4;
     private BluetoothAdapter BA = BluetoothAdapter.getDefaultAdapter();
-    private BluetoothSocket socket;
     private final static UUID MY_UUID = UUID.fromString("f5d23654-5558-40bc-ba2c-2277b1269274");
     private Listener listener;
     private ConnectThread connectingThread;
@@ -40,8 +35,6 @@ public class P2P extends Player {
     private int state = 0;
     private boolean isClientFirst = true;
     private boolean isFirstMove = true;
-
-
     private boolean isServer = true;
 
     private Coordinates p2pCoordinates = new Coordinates();
@@ -97,6 +90,15 @@ public class P2P extends Player {
             Log.i("Omok", "PLAY_ACK Sent");
             recieveMessage();
             Log.i("Omok", "sendACKPlay()");
+        }
+    }
+
+    public void sendClose(){
+        if(state==SENDING){
+            Log.i("Omok", "BYE Sent");
+            p2pConnected.writeBye();
+            closeConnection();
+            Log.i("Omok", "sendPlay()");
         }
     }
 

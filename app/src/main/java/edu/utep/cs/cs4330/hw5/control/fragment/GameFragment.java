@@ -110,7 +110,7 @@ public class GameFragment extends Fragment {
                             if (player instanceof Human) {
                                 playCoordinates = new Coordinates(x, y);
                                 Log.i("Human Coordinates ", " " + x + ", " + y);
-                                placeStone();
+
                                 if (omokGame.getPlayers()[1] instanceof Network) {
                                     ((Network) omokGame.getPlayers()[1]).sendCoordinates(playCoordinates, boardView);
                                     network = true;
@@ -119,6 +119,7 @@ public class GameFragment extends Fragment {
                                     ((P2P) omokGame.getPlayers()[1]).sendCoordinates(playCoordinates);
                                     p2p = true;
                                 }
+                                placeStone();
                             }
                             player = omokGame.getCurrentPlayer();
 
@@ -143,8 +144,7 @@ public class GameFragment extends Fragment {
                         return true;
                     }
                 }
-//                if(!omokGame.isGameRunning() && omokGame.getPlayers()[1] instanceof P2P)
-//                    ((P2P) omokGame.getPlayers()[1]).closeConnection();
+
                 return false;
             }
         });
@@ -199,8 +199,11 @@ public class GameFragment extends Fragment {
                 float normal_playback_rate = 1f;
                 sound.play(2, leftVolume, rightVolume, priority, 0, normal_playback_rate);
             }
-            else
+            else{
                 builder.setMessage(getResources().getString(R.string.loss_message));
+                if(!omokGame.isGameRunning() && omokGame.getPlayers()[1] instanceof P2P)
+                    ((P2P) omokGame.getPlayers()[1]).sendClose();
+            }
             AlertDialog dialog = builder.create();
             dialog.show();
         }
