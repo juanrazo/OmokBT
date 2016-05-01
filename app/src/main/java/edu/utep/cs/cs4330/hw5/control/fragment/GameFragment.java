@@ -42,7 +42,6 @@ public class GameFragment extends Fragment {
     private TextView textViewTurn;
     private boolean network = false;
     private boolean p2p = false;
-    private boolean computer = false;
     private Coordinates playCoordinates = new Coordinates();
     private Player player;
     private OmokGame omokGame;

@@ -34,7 +34,6 @@ public class WebServiceHandler {
     private Coordinates coordinates;
     private boolean isWin = false;
     private boolean isDraw = false;
-    private Coordinates[] winRow = new Coordinates[5];
     private String pid = "";
     private String strategy = "random";
     private String url = "";
